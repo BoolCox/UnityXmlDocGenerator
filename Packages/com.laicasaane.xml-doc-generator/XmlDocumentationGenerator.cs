@@ -25,6 +25,12 @@ namespace XmlDocGenerator
             }
         }
 
+        [Serializable]
+        private class AsmdefJson
+        {
+            public string name;
+        }
+
         private class PackageDef
         {
             public readonly RootPath Root;
@@ -329,7 +335,7 @@ namespace XmlDocGenerator
                         || (onlyGenerated == false && generatedFileExists == false)
                     )
                     {
-                        packageDef.Asmdefs.Add(new AsmdefXmlDoc(asmdefAsset.name, asmdefRoot));
+                        packageDef.Asmdefs.Add(new AsmdefXmlDoc(GetAssemblyName(asmdefAsset), asmdefRoot));
                     }
                 }
                 catch (Exception ex)
@@ -434,6 +440,15 @@ namespace XmlDocGenerator
                     $"<a href=\"file:///{scriptAssembliesFolderPath}\">{SCRIPT_ASSEMBLIES_FOLDER}</a>"
                 );
             }
+        }
+
+        private static string GetAssemblyName(AssemblyDefinitionAsset asmdefAsset)
+        {
+            // asmdefAsset.name is the asset file name, not the assembly name declared
+            // in the asmdef's `name` field. The two can differ, e.g.
+            // InternalBridgeDef.asmdef -> Unity.InternalAPIEngineBridge.001.
+            // The XML has to be named after the assembly so it pairs with its dll.
+            return JsonUtility.FromJson<AsmdefJson>(asmdefAsset.text).name;
         }
 
         private static RootPath GetProjectRootPath()
