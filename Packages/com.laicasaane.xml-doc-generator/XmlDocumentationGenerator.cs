@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEditor.PackageManager;
 using UnityEditorInternal;
 using UnityEngine;
@@ -168,7 +169,7 @@ namespace XmlDocGenerator
             EditorUtility.DisplayProgressBar(TITLE, INFO, 100f);
             EditorUtility.ClearProgressBar();
 
-            AssetDatabase.Refresh();
+            CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
 
             if (TryGetConfigAutoLog(out var autoLog) && autoLog)
             {
